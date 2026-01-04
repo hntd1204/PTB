@@ -4,343 +4,385 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Photobooth</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <title>Photo Booth Studio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 </head>
 
 <body>
 
-    <div class="container py-4">
-        <div class="glass-card">
-
-            <div id="camera-screen">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="video-wrapper">
-                            <video id="video" autoplay playsinline></video>
-                            <div id="frame-overlay" class="frame-overlay"></div>
-                            <div id="flash" class="flash-overlay"></div>
-                            <div id="countdown">3</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4 text-center d-flex flex-column justify-content-center">
-                        <h3 class="mb-3 text-white">Chọn khung ảnh</h3>
-                        <div class="d-flex justify-content-center gap-2 mb-4">
-                            <button class="btn btn-outline-light" onclick="setFrame(null)">Không khung</button>
-                            <button class="btn btn-outline-light" onclick="setFrame('frames/frame1.png')">Khung Hồng</button>
-                            <button class="btn btn-outline-light" onclick="setFrame('frames/frame2.png')">Khung Đen</button>
-                        </div>
-
-                        <h3 class="mb-3 text-white">Chế độ chụp</h3>
-                        <button id="btn-single" class="btn btn-light btn-lg mb-2 w-100 rounded-pill">
-                            <i class="fas fa-camera"></i> Chụp 1 tấm
-                        </button>
-                        <button id="btn-burst" class="btn btn-warning btn-lg w-100 rounded-pill fw-bold">
-                            <i class="fas fa-images"></i> Chụp liên hoàn (10 tấm)
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="selection-screen" style="display:none;">
-                <h3 class="text-center text-white mb-3">
-                    Chọn <span id="count-selected" class="text-warning">0</span> tấm ảnh ưng ý nhất
-                </h3>
-                <div class="gallery-grid" id="gallery">
-                </div>
-                <div class="text-center mt-4">
-                    <button class="btn btn-secondary me-2" onclick="resetApp()">Chụp lại từ đầu</button>
-                    <button class="btn btn-success btn-lg" onclick="processCollage()">
-                        <i class="fas fa-magic"></i> Ghép ảnh & Tải về
-                    </button>
-                </div>
-            </div>
-
-            <div id="result-screen" class="text-center" style="display:none;">
-                <h3 class="text-white mb-3">Tác phẩm của bạn!</h3>
-                <img id="final-result" class="img-fluid border border-3 border-white rounded shadow mb-3" style="max-height: 80vh;">
-                <div>
-                    <a id="download-btn" href="#" class="btn btn-light btn-lg" download="photobooth.png">
-                        <i class="fas fa-download"></i> Lưu về máy
-                    </a>
-                    <button class="btn btn-outline-light btn-lg ms-2" onclick="resetApp()">Làm mới</button>
-                </div>
-            </div>
-
+    <div class="app-card">
+        <div class="header">
+            <h1>Photo Booth</h1>
+            <p>Studio chụp ảnh tự động</p>
         </div>
-        <canvas id="canvas" style="display:none;"></canvas>
-        <canvas id="collage-canvas" style="display:none;"></canvas>
+
+        <div id="screen-1" class="screen active">
+            <div class="camera-frame">
+                <video id="video" autoplay playsinline></video>
+                <div id="countdown" class="countdown-overlay">5</div>
+                <div id="btn-manual" class="btn-snap" onclick="manualSnap()">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+
+            <div style="margin-top: 25px; text-align: center;">
+                <p id="status-text" style="color:#666; margin: 0 0 15px 0;">Sẵn sàng chụp 10 tấm (5s/tấm)</p>
+                <button id="btn-start" class="btn btn-primary" onclick="startProcess()">
+                    Bắt đầu chụp <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="screen-2" class="screen">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #333;">Chọn 4 tấm ưng ý</h3>
+                <p style="margin: 5px 0 0 0; color: #888; font-size: 0.9rem;">
+                    Đã chọn: <strong id="sel-count" style="color:var(--primary)">0</strong>/4
+                </p>
+            </div>
+
+            <div class="gallery-wrapper" id="gallery"></div>
+
+            <div style="display: flex; gap: 15px;">
+                <button class="btn btn-outline" onclick="location.reload()">
+                    <i class="fas fa-redo"></i> Chụp lại
+                </button>
+                <button id="btn-next" class="btn btn-primary" disabled onclick="toEditor()">
+                    Tiếp tục <i class="fas fa-magic"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="screen-3" class="screen">
+            <div class="editor-layout">
+                <div class="preview-col">
+                    <canvas id="canvas-final"
+                        style="max-height: 100%; max-width: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 4px;"></canvas>
+                </div>
+
+                <div class="tools-col">
+                    <div class="tool-group">
+                        <h5><i class="fas fa-th-large"></i> Bố cục</h5>
+                        <div class="btn-opt-row">
+                            <div class="btn-opt active" onclick="setLayout('grid', this)">
+                                <i class="fas fa-border-all"></i> Grid 2x2
+                            </div>
+                            <div class="btn-opt" onclick="setLayout('strip', this)">
+                                <i class="fas fa-grip-lines-vertical"></i> Dọc 1x4
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tool-group">
+                        <h5><i class="fas fa-palette"></i> Màu nền</h5>
+                        <div class="color-row">
+                            <div class="color-cir active" style="background:#fff" onclick="setColor('#fff', this)">
+                            </div>
+                            <div class="color-cir" style="background:#2d3436" onclick="setColor('#2d3436', this)"></div>
+                            <div class="color-cir" style="background:#ff9ff3" onclick="setColor('#ff9ff3', this)"></div>
+                            <div class="color-cir" style="background:#54a0ff" onclick="setColor('#54a0ff', this)"></div>
+                            <div class="color-cir" style="background:#feca57" onclick="setColor('#feca57', this)"></div>
+                            <div class="color-cir" style="background:#c8d6e5" onclick="setColor('#c8d6e5', this)"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: auto;">
+                        <button class="btn btn-accent" style="width: 100%;" onclick="processDownload()">
+                            <i class="fas fa-download"></i> Xong & Tải về
+                        </button>
+                        <button class="btn btn-outline" style="width: 100%; margin-top: 10px;"
+                            onclick="switchScreen('screen-2')">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-4" class="screen">
+            <h2 style="color: var(--primary-dark); margin-bottom: 20px;">Ảnh của bạn đây!</h2>
+            <img id="img-result">
+
+            <div style="display: flex; gap: 15px;">
+                <a id="link-download" href="#" class="btn btn-accent" download>
+                    <i class="fas fa-download"></i> Lưu về máy
+                </a>
+                <button class="btn btn-outline" onclick="location.reload()">
+                    <i class="fas fa-camera"></i> Chụp lượt mới
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const collageCanvas = document.getElementById('collage-canvas');
-        const overlay = document.getElementById('frame-overlay');
-        const gallery = document.getElementById('gallery');
-        const countdownEl = document.getElementById('countdown');
+    // --- CẤU HÌNH ---
+    const TIME_PER_SHOT = 5;
+    const TOTAL_SHOTS = 10;
 
-        let currentFrame = null; // Đường dẫn ảnh khung
-        let capturedPhotos = []; // Mảng chứa 10 ảnh gốc
-        let selectedIndices = []; // Mảng chứa index các ảnh được chọn
+    // --- VARIABLES ---
+    let stream;
+    const vid = document.getElementById('video');
+    const cnt = document.getElementById('countdown');
+    const statusTxt = document.getElementById('status-text');
+    const btnMan = document.getElementById('btn-manual');
+    const cvsTemp = document.createElement('canvas'); // Canvas tạm
+    const cvsFinal = document.getElementById('canvas-final'); // Canvas đích
+    const ctx = cvsFinal.getContext('2d');
 
-        // 1. Khởi động Camera
-        navigator.mediaDevices.getUserMedia({
-                video: {
-                    width: 1280,
-                    height: 720
+    let photos = [];
+    let selected = [];
+    let conf = {
+        layout: 'grid',
+        color: '#fff'
+    };
+    let tmrInterval, tmrResolve;
+
+    // 1. INIT CAMERA (Ưu tiên 4:3)
+    navigator.mediaDevices.getUserMedia({
+            video: {
+                width: {
+                    ideal: 1280
+                },
+                height: {
+                    ideal: 960
+                },
+                aspectRatio: {
+                    ideal: 1.3333
                 }
-            })
-            .then(stream => video.srcObject = stream)
-            .catch(err => alert("Lỗi Camera: " + err));
-
-        // 2. Chức năng chọn khung
-        function setFrame(path) {
-            currentFrame = path;
-            if (path) {
-                overlay.style.backgroundImage = `url('${path}')`;
-            } else {
-                overlay.style.backgroundImage = 'none';
             }
-        }
-
-        // 3. Chức năng chụp 1 tấm (Cơ bản)
-        document.getElementById('btn-single').addEventListener('click', () => {
-            takeShot().then(imgData => {
-                // Nếu có khung, cần ghép khung ngay lập tức (Code đơn giản hóa: coi như chụp xong)
-                saveToServer(imgData);
+        })
+        .then(s => {
+            stream = s;
+            vid.srcObject = s;
+        })
+        .catch(e => {
+            // Fallback nếu không mở được
+            navigator.mediaDevices.getUserMedia({
+                video: true
+            }).then(s => {
+                stream = s;
+                vid.srcObject = s;
             });
         });
 
-        // 4. CHỨC NĂNG CHỤP LIÊN HOÀN (BURST MODE)
-        document.getElementById('btn-burst').addEventListener('click', async () => {
-            capturedPhotos = []; // Reset
-            selectedIndices = [];
+    // 2. SHOOTING PROCESS
+    async function startProcess() {
+        document.getElementById('btn-start').style.display = 'none';
+        photos = [];
 
-            // Đếm ngược 3s trước khi bắt đầu
-            await runCountdown(3);
+        for (let i = 1; i <= TOTAL_SHOTS; i++) {
+            statusTxt.innerText = `Đang chụp tấm ${i}/${TOTAL_SHOTS}`;
+            btnMan.style.display = 'flex'; // Hiện nút chụp tay
 
-            // Chụp 10 tấm, mỗi tấm cách nhau 1 giây
-            for (let i = 1; i <= 10; i++) {
-                flashEffect();
-                const imgData = await takeShot(false); // false = không ghép khung ngay
-                capturedPhotos.push(imgData);
+            await runTimer(TIME_PER_SHOT);
 
-                // Hiển thị đếm ngược nhỏ hoặc thông báo
-                countdownEl.innerText = `${i}/10`;
-                countdownEl.style.display = 'block';
-                await new Promise(r => setTimeout(r, 800)); // Đợi 0.8s
+            btnMan.style.display = 'none'; // Ẩn nút
+
+            // Capture Full Resolution
+            cvsTemp.width = vid.videoWidth;
+            cvsTemp.height = vid.videoHeight;
+            const c = cvsTemp.getContext('2d');
+            c.translate(cvsTemp.width, 0);
+            c.scale(-1, 1); // Mirror
+            c.drawImage(vid, 0, 0);
+
+            photos.push(cvsTemp.toDataURL('image/png'));
+
+            if (i < TOTAL_SHOTS) {
+                statusTxt.innerText = "Chờ chút...";
+                await new Promise(r => setTimeout(r, 600));
             }
-            countdownEl.style.display = 'none';
-
-            // Chuyển sang màn hình chọn ảnh
-            showSelectionScreen();
-        });
-
-        // Hàm chụp ảnh từ video -> base64
-        function takeShot(applyFrame = false) {
-            return new Promise(resolve => {
-                const ctx = canvas.getContext('2d');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-
-                // Lật ảnh
-                ctx.translate(canvas.width, 0);
-                ctx.scale(-1, 1);
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                // Reset transform để vẽ khung (nếu cần)
-                ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-                if (applyFrame && currentFrame) {
-                    const frameImg = new Image();
-                    frameImg.src = currentFrame;
-                    frameImg.onload = () => {
-                        ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/png'));
-                    };
-                    frameImg.onerror = () => resolve(canvas.toDataURL('image/png')); // Lỗi ảnh thì trả về ảnh gốc
-                } else {
-                    resolve(canvas.toDataURL('image/png'));
-                }
-            });
         }
 
-        // 5. Hiển thị màn hình chọn ảnh
-        function showSelectionScreen() {
-            document.getElementById('camera-screen').style.display = 'none';
-            document.getElementById('selection-screen').style.display = 'block';
-            gallery.innerHTML = '';
+        switchScreen('screen-2');
+        renderGallery();
+        // Giữ camera chạy để nếu back lại không cần xin quyền lại
+    }
 
-            capturedPhotos.forEach((src, index) => {
-                const div = document.createElement('div');
-                div.className = 'gallery-item';
-                div.innerHTML = `<img src="${src}">`;
-                div.onclick = () => toggleSelect(div, index);
-                gallery.appendChild(div);
-            });
-            updateCount();
-        }
-
-        function toggleSelect(el, index) {
-            if (selectedIndices.includes(index)) {
-                // Bỏ chọn
-                selectedIndices = selectedIndices.filter(i => i !== index);
-                el.classList.remove('selected');
-            } else {
-                // Chọn mới (Chỉ cho phép tối đa 8)
-                if (selectedIndices.length < 8) {
-                    selectedIndices.push(index);
-                    el.classList.add('selected');
-                } else {
-                    alert("Chỉ được chọn tối đa 8 tấm thôi nhé!");
-                }
-            }
-            updateCount();
-        }
-
-        function updateCount() {
-            document.getElementById('count-selected').innerText = selectedIndices.length;
-        }
-
-        // 6. GHÉP ẢNH (COLLAGE)
-        function processCollage() {
-            if (selectedIndices.length === 0) {
-                alert("Hãy chọn ít nhất 1 tấm ảnh!");
-                return;
-            }
-
-            const ctx = collageCanvas.getContext('2d');
-            const imgCount = selectedIndices.length;
-
-            // Cấu hình kích thước (Ví dụ layout 2 cột)
-            const singleW = 400;
-            const singleH = 300; // Tỉ lệ 4:3
-            const gap = 20;
-            const cols = 2;
-            const rows = Math.ceil(imgCount / cols);
-
-            // Tính toán kích thước canvas tổng
-            const totalW = (singleW * cols) + (gap * (cols + 1));
-            const totalH = (singleH * rows) + (gap * (rows + 1)) + 100; // +100px cho footer (ngày tháng)
-
-            collageCanvas.width = totalW;
-            collageCanvas.height = totalH;
-
-            // Vẽ nền trắng
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, totalW, totalH);
-
-            // Tải và vẽ từng ảnh
-            let loaded = 0;
-            selectedIndices.forEach((imgIndex, i) => {
-                const img = new Image();
-                img.src = capturedPhotos[imgIndex];
-                img.onload = () => {
-                    const col = i % cols;
-                    const row = Math.floor(i / cols);
-                    const x = gap + (col * (singleW + gap));
-                    const y = gap + (row * (singleH + gap));
-
-                    // Vẽ ảnh chụp
-                    ctx.drawImage(img, x, y, singleW, singleH);
-
-                    // Nếu có khung đã chọn ban đầu, vẽ đè khung lên từng ảnh nhỏ (Optional)
-                    // Ở đây ta bỏ qua vẽ khung lên từng ảnh nhỏ cho đơn giản, 
-                    // hoặc bạn có thể vẽ một khung viền đơn giản:
-                    ctx.lineWidth = 5;
-                    ctx.strokeStyle = "#333";
-                    ctx.strokeRect(x, y, singleW, singleH);
-
-                    loaded++;
-                    if (loaded === imgCount) {
-                        finalizeCollage(ctx, totalW, totalH);
-                    }
-                };
-            });
-        }
-
-        function finalizeCollage(ctx, w, h) {
-            // Thêm chữ ký / ngày tháng
-            ctx.fillStyle = "#000";
-            ctx.font = "bold 30px Arial";
-            ctx.textAlign = "center";
-            ctx.fillText("MY PHOTOBOOTH - " + new Date().toLocaleDateString(), w / 2, h - 40);
-
-            // Xuất ra ảnh cuối cùng
-            const finalData = collageCanvas.toDataURL('image/png');
-            saveToServer(finalData);
-        }
-
-        // 7. Gửi về Server và hiện kết quả
-        function saveToServer(base64) {
-            fetch('save.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        image: base64
-                    })
-                })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('selection-screen').style.display = 'none';
-                        document.getElementById('camera-screen').style.display = 'none';
-                        document.getElementById('result-screen').style.display = 'block';
-
-                        document.getElementById('final-result').src = data.filepath;
-                        document.getElementById('download-btn').href = data.filepath;
-                    }
-                });
-        }
-
-        // Tiện ích
-        function flashEffect() {
-            const flash = document.getElementById('flash');
-            flash.style.opacity = 1;
-            setTimeout(() => flash.style.opacity = 0, 100);
-        }
-
-        function runCountdown(seconds) {
-            return new Promise(resolve => {
-                countdownEl.style.display = 'block';
-                let c = seconds;
-                countdownEl.innerText = c;
-                const timer = setInterval(() => {
-                    c--;
-                    if (c <= 0) {
-                        clearInterval(timer);
-                        countdownEl.style.display = 'none';
-                        resolve();
-                    } else {
-                        countdownEl.innerText = c;
-                    }
-                }, 1000);
-            });
-        }
-
-        function resetApp() {
-            location.reload();
-        }
-    </script>
-
-</body>
-
-</html>             resolve();
-                } else {
-                    countdownEl.innerText = c;
-                }
+    function runTimer(sec) {
+        return new Promise(resolve => {
+            tmrResolve = resolve;
+            let t = sec;
+            cnt.style.display = 'block';
+            cnt.innerText = t;
+            tmrInterval = setInterval(() => {
+                t--;
+                if (t <= 0) stopTimer();
+                else cnt.innerText = t;
             }, 1000);
         });
     }
 
-    function resetApp() {
-        location.reload();
+    function manualSnap() {
+        if (tmrResolve) stopTimer();
+    }
+
+    function stopTimer() {
+        clearInterval(tmrInterval);
+        cnt.style.display = 'none';
+        if (tmrResolve) {
+            tmrResolve();
+            tmrResolve = null;
+        }
+    }
+
+    // 3. GALLERY LOGIC
+    function renderGallery() {
+        const g = document.getElementById('gallery');
+        g.innerHTML = '';
+        photos.forEach((src, i) => {
+            const d = document.createElement('div');
+            d.className = 'photo-thumb' + (selected.includes(i) ? ' selected' : '');
+            d.innerHTML = `<img src="${src}"><div class="badge-check"><i class="fas fa-check"></i></div>`;
+            d.onclick = () => {
+                if (selected.includes(i)) selected = selected.filter(x => x !== i);
+                else if (selected.length < 4) selected.push(i);
+                renderGallery();
+            };
+            g.appendChild(d);
+        });
+        document.getElementById('sel-count').innerText = selected.length;
+        document.getElementById('btn-next').disabled = (selected.length !== 4);
+    }
+
+    // 4. EDITOR & CANVAS DRAWING
+    function toEditor() {
+        switchScreen('screen-3');
+        drawCanvas();
+    }
+
+    function setLayout(l, el) {
+        conf.layout = l;
+        activeBtn('.btn-opt', el);
+        drawCanvas();
+    }
+
+    function setColor(c, el) {
+        conf.color = c;
+        activeBtn('.color-cir', el);
+        drawCanvas();
+    }
+
+    function activeBtn(sel, el) {
+        document.querySelectorAll(sel).forEach(x => x.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    // HÀM VẼ CHÍNH (XỬ LÝ MÉO ẢNH)
+    async function drawCanvas() {
+        const wImg = 400,
+            hImg = 300; // Tỉ lệ 4:3 cho ô ảnh
+        const gap = 20,
+            pad = 40;
+        let w, h, pos;
+
+        if (conf.layout === 'grid') {
+            w = wImg * 2 + gap + pad * 2;
+            h = hImg * 2 + gap + pad * 2 + 80; // Footer space
+            pos = [{
+                    x: pad,
+                    y: pad
+                }, {
+                    x: pad + wImg + gap,
+                    y: pad
+                },
+                {
+                    x: pad,
+                    y: pad + hImg + gap
+                }, {
+                    x: pad + wImg + gap,
+                    y: pad + hImg + gap
+                }
+            ];
+        } else {
+            w = wImg + pad * 2;
+            h = hImg * 4 + gap * 3 + pad * 2 + 80;
+            pos = [{
+                    x: pad,
+                    y: pad
+                }, {
+                    x: pad,
+                    y: pad + hImg + gap
+                },
+                {
+                    x: pad,
+                    y: pad + (hImg + gap) * 2
+                }, {
+                    x: pad,
+                    y: pad + (hImg + gap) * 3
+                }
+            ];
+        }
+
+        cvsFinal.width = w;
+        cvsFinal.height = h;
+
+        // Background
+        ctx.fillStyle = conf.color;
+        ctx.fillRect(0, 0, w, h);
+
+        // Draw Photos (Center Crop)
+        for (let i = 0; i < 4; i++) {
+            const img = await new Promise(r => {
+                const im = new Image();
+                im.onload = () => r(im);
+                im.src = photos[selected[i]];
+            });
+
+            // Dùng hàm drawImageCover để không bị méo
+            drawImageCover(ctx, img, pos[i].x, pos[i].y, wImg, hImg);
+
+            // Border
+            ctx.strokeStyle = "rgba(0,0,0,0.05)";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(pos[i].x, pos[i].y, wImg, hImg);
+        }
+
+        // Footer Text
+        ctx.fillStyle = (['#000', '#000000', '#2d3436'].includes(conf.color)) ? '#fff' : '#333';
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 24px Quicksand';
+        ctx.fillText("PHOTO BOOTH", w / 2, h - 50);
+        ctx.font = '16px Quicksand';
+        ctx.fillText(new Date().toLocaleDateString('vi-VN'), w / 2, h - 25);
+    }
+
+    // Hàm thông minh để cắt ảnh vào khung (Object-fit: Cover)
+    function drawImageCover(ctx, img, x, y, w, h) {
+        const ratioW = w / h;
+        const ratioImg = img.width / img.height;
+        let sx, sy, sWidth, sHeight;
+
+        if (ratioImg > ratioW) {
+            sHeight = img.height;
+            sWidth = img.height * ratioW;
+            sx = (img.width - sWidth) / 2;
+            sy = 0;
+        } else {
+            sWidth = img.width;
+            sHeight = img.width / ratioW;
+            sx = 0;
+            sy = (img.height - sHeight) / 2;
+        }
+        ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, w, h);
+    }
+
+    // 5. DOWNLOAD
+    function processDownload() {
+        const url = cvsFinal.toDataURL('image/png');
+        document.getElementById('img-result').src = url;
+        const link = document.getElementById('link-download');
+        link.href = url;
+        link.download = `PhotoBooth_${Date.now()}.png`;
+        switchScreen('screen-4');
+    }
+
+    function switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
     }
     </script>
 

@@ -1,59 +1,120 @@
-/* 1. NHÚNG FONT CHỮ */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap');
 
-/* 2. CẤU HÌNH CHUNG & NỀN ĐỘNG */
+:root {
+    --bg-body: #f4f6f8;
+    /* Nền xám nhạt */
+    --bg-card: #ffffff;
+    /* Nền ứng dụng trắng */
+    --text-main: #2d3436;
+    /* Chữ đen xám */
+    --primary: #ff9ff3;
+    /* Hồng Pastel */
+    --primary-dark: #f368e0;
+    /* Hồng đậm (Hover) */
+    --accent: #54a0ff;
+    /* Xanh dương (Nút tải) */
+    --success: #00b894;
+    /* Xanh lá (Badge chọn) */
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: 'Poppins', sans-serif;
-    /* Màu nền Gradient chuyển động */
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
-    min-height: 100vh;
-    color: #fff;
+    font-family: 'Quicksand', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    margin: 0;
+    height: 100vh;
+    /* Full màn hình */
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-@keyframes gradientBG {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-/* 3. KHUNG KÍNH (GLASSMORPHISM CARD) */
-.glass-card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border-radius: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    padding: 30px;
-    width: 100%;
-    max-width: 1100px;
-    /* Giới hạn chiều rộng để đẹp hơn */
-    margin: 0 auto;
-}
-
-/* 4. KHUNG HIỂN THỊ CAMERA */
-.video-wrapper {
-    position: relative;
-    border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    background: #000;
-    /* Tỉ lệ khung hình 4:3 hoặc 16:9 */
-    aspect-ratio: 16/9;
+    /* Chống cuộn */
+}
+
+/* Khung ứng dụng chính */
+.app-card {
+    background: var(--bg-card);
+    width: 95%;
+    max-width: 950px;
+    /* Độ rộng vừa phải */
+    height: 92vh;
+    /* Chiếm 92% chiều cao màn hình */
+    border-radius: 24px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+    position: relative;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 15px;
+    flex-shrink: 0;
+}
+
+.header h1 {
+    font-size: 1.4rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #333;
+}
+
+.header p {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 5px 0 0 0;
+}
+
+/* Screens (Màn hình) */
+.screen {
+    flex: 1;
+    display: none;
+    /* Ẩn mặc định */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 100%;
+    height: 100%;
+    overflow: hidden;
+    animation: fadeIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.screen.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* === CAMERA SCREEN === */
+.camera-frame {
+    width: 100%;
+    max-width: 700px;
+    height: 100%;
+    max-height: 65vh;
+    /* Giới hạn chiều cao camera */
+    aspect-ratio: 4/3;
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
 video {
@@ -61,159 +122,260 @@ video {
     height: 100%;
     object-fit: cover;
     transform: scaleX(-1);
-    /* Lật ngược video để giống soi gương */
-    display: block;
 }
 
-/* Lớp phủ Khung ảnh (PNG Frame) */
-.frame-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10;
-    /* Nằm trên video */
-    pointer-events: none;
-    /* Để click chuột xuyên qua được */
-    background-size: 100% 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    transition: background-image 0.3s ease;
-}
-
-/* Hiệu ứng đèn Flash */
-.flash-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: white;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.1s ease-out;
-    z-index: 20;
-    /* Nằm trên cả khung ảnh */
-}
-
-/* Số đếm ngược (3..2..1) */
-#countdown {
+.countdown-overlay {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 8rem;
-    font-weight: 700;
+    font-size: 6rem;
     color: white;
-    text-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
-    z-index: 30;
+    font-weight: 800;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
     display: none;
 }
 
-/* 5. NÚT BẤM & ĐIỀU KHIỂN */
-.btn {
-    transition: all 0.3s ease;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* Nút chụp đơn (nếu dùng) */
+/* Nút chụp tay */
 .btn-snap {
-    width: 70px;
-    height: 70px;
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 65px;
+    height: 65px;
     border-radius: 50%;
     background: white;
-    border: 5px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    font-size: 1.5rem;
+    color: #333;
+    transition: transform 0.1s;
+}
+
+.btn-snap:active {
+    transform: translateX(-50%) scale(0.9);
+}
+
+/* === GALLERY SCREEN (Gọn gàng) === */
+.gallery-wrapper {
+    width: 100%;
+    max-width: 650px;
+    /* Giới hạn chiều rộng để ảnh nhỏ gọn */
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    /* 5 cột */
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.photo-thumb {
+    aspect-ratio: 4/3;
+    background: #f0f0f0;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    opacity: 0.6;
+    /* Mờ ảnh chưa chọn */
+    filter: grayscale(20%);
+    transform: scale(0.96);
+}
+
+.photo-thumb:hover {
+    opacity: 0.9;
+    transform: scale(1);
+}
+
+.photo-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Trạng thái đã chọn */
+.photo-thumb.selected {
+    border-color: var(--primary);
+    opacity: 1;
+    filter: grayscale(0%);
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.badge-check {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: var(--primary);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: bold;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.photo-thumb.selected .badge-check {
+    display: flex;
+}
+
+/* === EDITOR SCREEN (Split View) === */
+.editor-layout {
+    display: flex;
+    gap: 25px;
+    width: 100%;
+    height: 100%;
+}
+
+.preview-col {
+    flex: 2;
+    background: #f9f9f9;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.tools-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Tool Groups */
+.tool-group h5 {
+    margin: 0 0 10px 0;
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.btn-opt-row {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-opt {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    color: #555;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-opt.active {
+    background: #fff0f6;
+    border-color: var(--primary);
+    color: var(--primary-dark);
+    font-weight: bold;
+}
+
+/* Color Circles */
+.color-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.color-cir {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px #ddd;
     cursor: pointer;
     transition: transform 0.2s;
 }
 
-.btn-snap:hover {
-    transform: scale(1.1);
-    border-color: #ff4081;
+.color-cir.active {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 2px #333;
 }
 
-/* 6. THƯ VIỆN ẢNH (GALLERY GRID) */
-/* Lưới hiển thị 10 ảnh (5 cột x 2 hàng) */
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 15px;
-    margin-top: 20px;
-}
-
-/* Responsive cho màn hình nhỏ */
-@media (max-width: 768px) {
-    .gallery-grid {
-        grid-template-columns: repeat(3, 1fr);
-        /* Màn hình nhỏ thì 3 cột */
-    }
-}
-
-.gallery-item {
-    position: relative;
+/* === BUTTONS === */
+.btn {
+    padding: 10px 24px;
+    border-radius: 50px;
+    border: none;
+    font-weight: 700;
     cursor: pointer;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 3px solid transparent;
     transition: all 0.2s;
-    background: #000;
-}
-
-.gallery-item img {
-    width: 100%;
-    height: 100px;
-    /* Chiều cao cố định cho đều */
-    object-fit: cover;
-    display: block;
-    opacity: 0.7;
-    /* Mờ đi một chút khi chưa chọn */
-    transition: opacity 0.2s;
-}
-
-.gallery-item:hover img {
-    opacity: 1;
-}
-
-/* Trạng thái ĐÃ CHỌN */
-.gallery-item.selected {
-    border-color: #00ff88;
-    /* Viền xanh lá */
-    transform: scale(0.95);
-    box-shadow: 0 0 15px #00ff88;
-}
-
-.gallery-item.selected img {
-    opacity: 1;
-}
-
-/* Dấu tích (Checkmark) khi chọn */
-.gallery-item.selected::after {
-    content: '✔';
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: #00ff88;
-    color: #000;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    gap: 8px;
+    font-size: 0.95rem;
+    text-decoration: none;
 }
 
-/* 7. KẾT QUẢ */
-#final-result {
-    background-color: white;
-    padding: 10px;
-    /* Giả lập viền trắng của ảnh in */
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn:disabled {
+    background: #dfe6e9 !important;
+    color: #b2bec3;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-accent {
+    background: var(--accent);
+    color: white;
+}
+
+.btn-accent:hover {
+    background: #2e86de;
+}
+
+.btn-outline {
+    background: white;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.btn-outline:hover {
+    border-color: #bbb;
+    color: #333;
+}
+
+/* Result Image */
+#img-result {
+    max-height: 85%;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
