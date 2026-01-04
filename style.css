@@ -1,0 +1,219 @@
+/* 1. NHÚNG FONT CHỮ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+/* 2. CẤU HÌNH CHUNG & NỀN ĐỘNG */
+body {
+    font-family: 'Poppins', sans-serif;
+    /* Màu nền Gradient chuyển động */
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    min-height: 100vh;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* 3. KHUNG KÍNH (GLASSMORPHISM CARD) */
+.glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    padding: 30px;
+    width: 100%;
+    max-width: 1100px;
+    /* Giới hạn chiều rộng để đẹp hơn */
+    margin: 0 auto;
+}
+
+/* 4. KHUNG HIỂN THỊ CAMERA */
+.video-wrapper {
+    position: relative;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    background: #000;
+    /* Tỉ lệ khung hình 4:3 hoặc 16:9 */
+    aspect-ratio: 16/9;
+    width: 100%;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+    /* Lật ngược video để giống soi gương */
+    display: block;
+}
+
+/* Lớp phủ Khung ảnh (PNG Frame) */
+.frame-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    /* Nằm trên video */
+    pointer-events: none;
+    /* Để click chuột xuyên qua được */
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image 0.3s ease;
+}
+
+/* Hiệu ứng đèn Flash */
+.flash-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s ease-out;
+    z-index: 20;
+    /* Nằm trên cả khung ảnh */
+}
+
+/* Số đếm ngược (3..2..1) */
+#countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 8rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+    z-index: 30;
+    display: none;
+}
+
+/* 5. NÚT BẤM & ĐIỀU KHIỂN */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Nút chụp đơn (nếu dùng) */
+.btn-snap {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: white;
+    border: 5px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-snap:hover {
+    transform: scale(1.1);
+    border-color: #ff4081;
+}
+
+/* 6. THƯ VIỆN ẢNH (GALLERY GRID) */
+/* Lưới hiển thị 10 ảnh (5 cột x 2 hàng) */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+        /* Màn hình nhỏ thì 3 cột */
+    }
+}
+
+.gallery-item {
+    position: relative;
+    cursor: pointer;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 3px solid transparent;
+    transition: all 0.2s;
+    background: #000;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100px;
+    /* Chiều cao cố định cho đều */
+    object-fit: cover;
+    display: block;
+    opacity: 0.7;
+    /* Mờ đi một chút khi chưa chọn */
+    transition: opacity 0.2s;
+}
+
+.gallery-item:hover img {
+    opacity: 1;
+}
+
+/* Trạng thái ĐÃ CHỌN */
+.gallery-item.selected {
+    border-color: #00ff88;
+    /* Viền xanh lá */
+    transform: scale(0.95);
+    box-shadow: 0 0 15px #00ff88;
+}
+
+.gallery-item.selected img {
+    opacity: 1;
+}
+
+/* Dấu tích (Checkmark) khi chọn */
+.gallery-item.selected::after {
+    content: '✔';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #00ff88;
+    color: #000;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* 7. KẾT QUẢ */
+#final-result {
+    background-color: white;
+    padding: 10px;
+    /* Giả lập viền trắng của ảnh in */
+}
