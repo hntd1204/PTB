@@ -27,7 +27,6 @@ body {
     color: var(--text-main);
     margin: 0;
     height: 100vh;
-    /* Full màn hình */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,14 +34,11 @@ body {
     /* Chống cuộn */
 }
 
-/* Khung ứng dụng chính */
 .app-card {
     background: var(--bg-card);
     width: 95%;
     max-width: 950px;
-    /* Độ rộng vừa phải */
     height: 92vh;
-    /* Chiếm 92% chiều cao màn hình */
     border-radius: 24px;
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.05);
     display: flex;
@@ -72,11 +68,10 @@ body {
     margin: 5px 0 0 0;
 }
 
-/* Screens (Màn hình) */
+/* Màn hình */
 .screen {
     flex: 1;
     display: none;
-    /* Ẩn mặc định */
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -102,13 +97,12 @@ body {
     }
 }
 
-/* === CAMERA SCREEN === */
+/* === CAMERA === */
 .camera-frame {
     width: 100%;
     max-width: 700px;
     height: 100%;
     max-height: 65vh;
-    /* Giới hạn chiều cao camera */
     aspect-ratio: 4/3;
     background: #000;
     border-radius: 16px;
@@ -137,7 +131,6 @@ video {
     display: none;
 }
 
-/* Nút chụp tay */
 .btn-snap {
     position: absolute;
     bottom: 15px;
@@ -162,14 +155,13 @@ video {
     transform: translateX(-50%) scale(0.9);
 }
 
-/* === GALLERY SCREEN (Gọn gàng) === */
+/* === GALLERY (Gọn gàng) === */
 .gallery-wrapper {
     width: 100%;
     max-width: 650px;
-    /* Giới hạn chiều rộng để ảnh nhỏ gọn */
+    /* Thu nhỏ lưới ảnh */
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    /* 5 cột */
     gap: 10px;
     margin-bottom: 25px;
 }
@@ -183,9 +175,9 @@ video {
     position: relative;
     transition: all 0.2s ease;
     border: 2px solid transparent;
-    opacity: 0.6;
+    opacity: 0.5;
     /* Mờ ảnh chưa chọn */
-    filter: grayscale(20%);
+    filter: grayscale(30%);
     transform: scale(0.96);
 }
 
@@ -206,7 +198,7 @@ video {
     opacity: 1;
     filter: grayscale(0%);
     transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     z-index: 10;
 }
 
@@ -231,7 +223,7 @@ video {
     display: flex;
 }
 
-/* === EDITOR SCREEN (Split View) === */
+/* === EDITOR === */
 .editor-layout {
     display: flex;
     gap: 25px;
@@ -253,35 +245,36 @@ video {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
     justify-content: center;
 }
 
-/* Tool Groups */
 .tool-group h5 {
-    margin: 0 0 10px 0;
-    font-size: 0.95rem;
+    margin: 0 0 8px 0;
+    font-size: 0.9rem;
     color: #666;
+    font-weight: 700;
 }
 
 .btn-opt-row {
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    margin-bottom: 5px;
 }
 
 .btn-opt {
     flex: 1;
-    padding: 10px;
+    padding: 8px;
     border: 1px solid #ddd;
     border-radius: 8px;
     background: white;
     cursor: pointer;
     color: #555;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 5px;
     transition: all 0.2s;
 }
 
@@ -300,8 +293,8 @@ video {
 }
 
 .color-cir {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     border: 2px solid white;
     box-shadow: 0 0 0 1px #ddd;
@@ -314,7 +307,7 @@ video {
     box-shadow: 0 0 0 2px #333;
 }
 
-/* === BUTTONS === */
+/* Buttons */
 .btn {
     padding: 10px 24px;
     border-radius: 50px;
@@ -348,17 +341,9 @@ video {
     color: white;
 }
 
-.btn-primary:hover {
-    background: var(--primary-dark);
-}
-
 .btn-accent {
     background: var(--accent);
     color: white;
-}
-
-.btn-accent:hover {
-    background: #2e86de;
 }
 
 .btn-outline {
@@ -367,12 +352,6 @@ video {
     color: #666;
 }
 
-.btn-outline:hover {
-    border-color: #bbb;
-    color: #333;
-}
-
-/* Result Image */
 #img-result {
     max-height: 85%;
     border-radius: 8px;

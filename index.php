@@ -4,9 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Booth Studio</title>
+    <title>Photo Booth Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 </head>
 
@@ -66,12 +65,23 @@
                     <div class="tool-group">
                         <h5><i class="fas fa-th-large"></i> Bố cục</h5>
                         <div class="btn-opt-row">
-                            <div class="btn-opt active" onclick="setLayout('grid', this)">
+                            <div class="btn-opt active layout-opt" onclick="setLayout('grid', this)">
                                 <i class="fas fa-border-all"></i> Grid 2x2
                             </div>
-                            <div class="btn-opt" onclick="setLayout('strip', this)">
+                            <div class="btn-opt layout-opt" onclick="setLayout('strip', this)">
                                 <i class="fas fa-grip-lines-vertical"></i> Dọc 1x4
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="tool-group">
+                        <h5><i class="fas fa-magic"></i> Bộ lọc màu</h5>
+                        <div class="btn-opt-row">
+                            <div class="btn-opt active filter-opt" onclick="setFilter('none', this)">Gốc</div>
+                            <div class="btn-opt filter-opt" onclick="setFilter('grayscale(100%)', this)">B&W</div>
+                            <div class="btn-opt filter-opt" onclick="setFilter('sepia(50%)', this)">Phim</div>
+                            <div class="btn-opt filter-opt"
+                                onclick="setFilter('contrast(110%) brightness(110%)', this)">Tươi</div>
                         </div>
                     </div>
 
@@ -84,7 +94,6 @@
                             <div class="color-cir" style="background:#ff9ff3" onclick="setColor('#ff9ff3', this)"></div>
                             <div class="color-cir" style="background:#54a0ff" onclick="setColor('#54a0ff', this)"></div>
                             <div class="color-cir" style="background:#feca57" onclick="setColor('#feca57', this)"></div>
-                            <div class="color-cir" style="background:#c8d6e5" onclick="setColor('#c8d6e5', this)"></div>
                         </div>
                     </div>
 
@@ -104,7 +113,6 @@
         <div id="screen-4" class="screen">
             <h2 style="color: var(--primary-dark); margin-bottom: 20px;">Ảnh của bạn đây!</h2>
             <img id="img-result">
-
             <div style="display: flex; gap: 15px;">
                 <a id="link-download" href="#" class="btn btn-accent" download>
                     <i class="fas fa-download"></i> Lưu về máy
@@ -114,7 +122,6 @@
                 </button>
             </div>
         </div>
-
     </div>
 
     <script>
@@ -122,21 +129,23 @@
     const TIME_PER_SHOT = 5;
     const TOTAL_SHOTS = 10;
 
-    // --- VARIABLES ---
+    // --- BIẾN ---
     let stream;
     const vid = document.getElementById('video');
     const cnt = document.getElementById('countdown');
     const statusTxt = document.getElementById('status-text');
     const btnMan = document.getElementById('btn-manual');
-    const cvsTemp = document.createElement('canvas'); // Canvas tạm
-    const cvsFinal = document.getElementById('canvas-final'); // Canvas đích
+    const cvsTemp = document.createElement('canvas');
+    const cvsFinal = document.getElementById('canvas-final');
     const ctx = cvsFinal.getContext('2d');
 
     let photos = [];
     let selected = [];
+    // Cấu hình mặc định: có thêm filter
     let conf = {
         layout: 'grid',
-        color: '#fff'
+        color: '#fff',
+        filter: 'none'
     };
     let tmrInterval, tmrResolve;
 
@@ -159,7 +168,6 @@
             vid.srcObject = s;
         })
         .catch(e => {
-            // Fallback nếu không mở được
             navigator.mediaDevices.getUserMedia({
                 video: true
             }).then(s => {
@@ -168,27 +176,26 @@
             });
         });
 
-    // 2. SHOOTING PROCESS
+    // 2. CHỤP ẢNH
     async function startProcess() {
         document.getElementById('btn-start').style.display = 'none';
         photos = [];
 
         for (let i = 1; i <= TOTAL_SHOTS; i++) {
             statusTxt.innerText = `Đang chụp tấm ${i}/${TOTAL_SHOTS}`;
-            btnMan.style.display = 'flex'; // Hiện nút chụp tay
+            btnMan.style.display = 'flex';
 
             await runTimer(TIME_PER_SHOT);
 
-            btnMan.style.display = 'none'; // Ẩn nút
+            btnMan.style.display = 'none';
 
-            // Capture Full Resolution
+            // Capture
             cvsTemp.width = vid.videoWidth;
             cvsTemp.height = vid.videoHeight;
             const c = cvsTemp.getContext('2d');
             c.translate(cvsTemp.width, 0);
-            c.scale(-1, 1); // Mirror
+            c.scale(-1, 1);
             c.drawImage(vid, 0, 0);
-
             photos.push(cvsTemp.toDataURL('image/png'));
 
             if (i < TOTAL_SHOTS) {
@@ -199,7 +206,6 @@
 
         switchScreen('screen-2');
         renderGallery();
-        // Giữ camera chạy để nếu back lại không cần xin quyền lại
     }
 
     function runTimer(sec) {
@@ -229,7 +235,7 @@
         }
     }
 
-    // 3. GALLERY LOGIC
+    // 3. CHỌN ẢNH
     function renderGallery() {
         const g = document.getElementById('gallery');
         g.innerHTML = '';
@@ -248,15 +254,22 @@
         document.getElementById('btn-next').disabled = (selected.length !== 4);
     }
 
-    // 4. EDITOR & CANVAS DRAWING
+    // 4. EDITOR & FILTER LOGIC
     function toEditor() {
         switchScreen('screen-3');
         drawCanvas();
     }
 
+    // Các hàm chọn cấu hình
     function setLayout(l, el) {
         conf.layout = l;
-        activeBtn('.btn-opt', el);
+        activeBtn('.layout-opt', el);
+        drawCanvas();
+    }
+
+    function setFilter(f, el) {
+        conf.filter = f;
+        activeBtn('.filter-opt', el);
         drawCanvas();
     }
 
@@ -271,60 +284,56 @@
         el.classList.add('active');
     }
 
-    // HÀM VẼ CHÍNH (XỬ LÝ MÉO ẢNH)
+    // HÀM VẼ CHÍNH (XỬ LÝ FILTER + MÉO ẢNH)
     async function drawCanvas() {
         const wImg = 400,
-            hImg = 300; // Tỉ lệ 4:3 cho ô ảnh
+            hImg = 300;
         const gap = 20,
             pad = 40;
         let w, h, pos;
 
         if (conf.layout === 'grid') {
             w = wImg * 2 + gap + pad * 2;
-            h = hImg * 2 + gap + pad * 2 + 80; // Footer space
+            h = hImg * 2 + gap + pad * 2 + 80;
             pos = [{
-                    x: pad,
-                    y: pad
-                }, {
-                    x: pad + wImg + gap,
-                    y: pad
-                },
-                {
-                    x: pad,
-                    y: pad + hImg + gap
-                }, {
-                    x: pad + wImg + gap,
-                    y: pad + hImg + gap
-                }
-            ];
+                x: pad,
+                y: pad
+            }, {
+                x: pad + wImg + gap,
+                y: pad
+            }, {
+                x: pad,
+                y: pad + hImg + gap
+            }, {
+                x: pad + wImg + gap,
+                y: pad + hImg + gap
+            }];
         } else {
             w = wImg + pad * 2;
             h = hImg * 4 + gap * 3 + pad * 2 + 80;
             pos = [{
-                    x: pad,
-                    y: pad
-                }, {
-                    x: pad,
-                    y: pad + hImg + gap
-                },
-                {
-                    x: pad,
-                    y: pad + (hImg + gap) * 2
-                }, {
-                    x: pad,
-                    y: pad + (hImg + gap) * 3
-                }
-            ];
+                x: pad,
+                y: pad
+            }, {
+                x: pad,
+                y: pad + hImg + gap
+            }, {
+                x: pad,
+                y: pad + (hImg + gap) * 2
+            }, {
+                x: pad,
+                y: pad + (hImg + gap) * 3
+            }];
         }
 
         cvsFinal.width = w;
         cvsFinal.height = h;
 
-        // Background
+        // Vẽ nền
         ctx.fillStyle = conf.color;
         ctx.fillRect(0, 0, w, h);
 
-        // Draw Photos (Center Crop)
+        // Vẽ ảnh
         for (let i = 0; i < 4; i++) {
             const img = await new Promise(r => {
                 const im = new Image();
@@ -332,16 +341,23 @@
                 im.src = photos[selected[i]];
             });
 
-            // Dùng hàm drawImageCover để không bị méo
+            // --- ÁP DỤNG FILTER ---
+            ctx.save();
+            ctx.filter = conf.filter; // Áp dụng filter CSS (grayscale, sepia...)
+
+            // Vẽ ảnh (không bị méo)
             drawImageCover(ctx, img, pos[i].x, pos[i].y, wImg, hImg);
 
-            // Border
+            ctx.restore(); // Xóa filter để không ảnh hưởng viền
+            // ---------------------
+
+            // Viền mỏng
             ctx.strokeStyle = "rgba(0,0,0,0.05)";
             ctx.lineWidth = 1;
             ctx.strokeRect(pos[i].x, pos[i].y, wImg, hImg);
         }
 
-        // Footer Text
+        // Footer
         ctx.fillStyle = (['#000', '#000000', '#2d3436'].includes(conf.color)) ? '#fff' : '#333';
         ctx.textAlign = 'center';
         ctx.font = 'bold 24px Quicksand';
@@ -350,7 +366,7 @@
         ctx.fillText(new Date().toLocaleDateString('vi-VN'), w / 2, h - 25);
     }
 
-    // Hàm thông minh để cắt ảnh vào khung (Object-fit: Cover)
+    // Hàm cắt ảnh Center Crop
     function drawImageCover(ctx, img, x, y, w, h) {
         const ratioW = w / h;
         const ratioImg = img.width / img.height;
