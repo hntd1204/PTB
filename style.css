@@ -2,19 +2,12 @@
 
 :root {
     --bg-body: #f4f6f8;
-    /* Nền xám nhạt */
     --bg-card: #ffffff;
-    /* Nền ứng dụng trắng */
     --text-main: #2d3436;
-    /* Chữ đen xám */
     --primary: #ff9ff3;
-    /* Hồng Pastel */
     --primary-dark: #f368e0;
-    /* Hồng đậm (Hover) */
     --accent: #54a0ff;
-    /* Xanh dương (Nút tải) */
     --success: #00b894;
-    /* Xanh lá (Badge chọn) */
 }
 
 * {
@@ -31,26 +24,28 @@ body {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    /* Chống cuộn */
+    user-select: none;
+    /* Chống bôi đen khi kéo thả */
 }
 
 .app-card {
     background: var(--bg-card);
     width: 95%;
-    max-width: 950px;
-    height: 92vh;
+    max-width: 1000px;
+    /* Rộng hơn chút để chứa công cụ */
+    height: 95vh;
     border-radius: 24px;
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    padding: 25px;
+    padding: 20px;
     position: relative;
 }
 
 /* Header */
 .header {
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     flex-shrink: 0;
 }
 
@@ -63,12 +58,12 @@ body {
 }
 
 .header p {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #888;
-    margin: 5px 0 0 0;
+    margin: 2px 0 0 0;
 }
 
-/* Màn hình */
+/* Screens */
 .screen {
     flex: 1;
     display: none;
@@ -102,7 +97,7 @@ body {
     width: 100%;
     max-width: 700px;
     height: 100%;
-    max-height: 65vh;
+    max-height: 60vh;
     aspect-ratio: 4/3;
     background: #000;
     border-radius: 16px;
@@ -155,15 +150,14 @@ video {
     transform: translateX(-50%) scale(0.9);
 }
 
-/* === GALLERY (Gọn gàng) === */
+/* === GALLERY === */
 .gallery-wrapper {
     width: 100%;
     max-width: 650px;
-    /* Thu nhỏ lưới ảnh */
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-bottom: 25px;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
 .photo-thumb {
@@ -176,7 +170,6 @@ video {
     transition: all 0.2s ease;
     border: 2px solid transparent;
     opacity: 0.5;
-    /* Mờ ảnh chưa chọn */
     filter: grayscale(30%);
     transform: scale(0.96);
 }
@@ -192,7 +185,6 @@ video {
     object-fit: cover;
 }
 
-/* Trạng thái đã chọn */
 .photo-thumb.selected {
     border-color: var(--primary);
     opacity: 1;
@@ -208,74 +200,102 @@ video {
     right: 4px;
     background: var(--primary);
     color: white;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     font-size: 10px;
     font-weight: bold;
     display: none;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .photo-thumb.selected .badge-check {
     display: flex;
 }
 
-/* === EDITOR === */
+/* === EDITOR (NÂNG CẤP) === */
 .editor-layout {
     display: flex;
-    gap: 25px;
+    gap: 20px;
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 .preview-col {
     flex: 2;
-    background: #f9f9f9;
+    background: #f0f2f5;
     border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 10px;
+    position: relative;
+}
+
+/* Canvas cần trỏ chuột để kéo thả */
+#canvas-final {
+    max-height: 100%;
+    max-width: 100%;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    cursor: grab;
+}
+
+#canvas-final:active {
+    cursor: grabbing;
 }
 
 .tools-col {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    justify-content: center;
+    gap: 10px;
+    overflow-y: auto;
+    padding-right: 5px;
+    /* Cho phép cuộn nếu tool dài */
 }
 
-.tool-group h5 {
+/* Tabs & Tool Groups */
+.tool-section {
+    background: #fdfdfd;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+}
+
+.tool-section h5 {
     margin: 0 0 8px 0;
     font-size: 0.9rem;
-    color: #666;
+    color: #444;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .btn-opt-row {
     display: flex;
     gap: 8px;
-    margin-bottom: 5px;
+    flex-wrap: wrap;
 }
 
 .btn-opt {
     flex: 1;
     padding: 8px;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 6px;
     background: white;
     cursor: pointer;
     color: #555;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 4px;
     transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .btn-opt.active {
@@ -285,16 +305,50 @@ video {
     font-weight: bold;
 }
 
-/* Color Circles */
-.color-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+/* Sticker Grid */
+.sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
 }
 
+.sticker-item {
+    font-size: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+.sticker-item:hover {
+    background: #eee;
+    transform: scale(1.2);
+}
+
+/* Inputs */
+.input-group {
+    display: flex;
+    gap: 5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: inherit;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+}
+
+/* Color Circles */
 .color-cir {
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     border-radius: 50%;
     border: 2px solid white;
     box-shadow: 0 0 0 1px #ddd;
@@ -309,7 +363,7 @@ video {
 
 /* Buttons */
 .btn {
-    padding: 10px 24px;
+    padding: 10px 20px;
     border-radius: 50px;
     border: none;
     font-weight: 700;
@@ -321,6 +375,7 @@ video {
     gap: 8px;
     font-size: 0.95rem;
     text-decoration: none;
+    width: 100%;
 }
 
 .btn:hover {
@@ -332,8 +387,6 @@ video {
     background: #dfe6e9 !important;
     color: #b2bec3;
     cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
 }
 
 .btn-primary {
@@ -353,8 +406,8 @@ video {
 }
 
 #img-result {
-    max-height: 85%;
+    max-height: 75%;
     border-radius: 8px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
