@@ -21,6 +21,12 @@
         <div id="screen-1" class="screen active">
             <div class="camera-frame">
                 <video id="video" autoplay playsinline></video>
+
+                <div class="cam-tools">
+                    <button class="btn-icon-circle" onclick="toggleMirror()" title="Lật camera">
+                        <i class="fas fa-exchange-alt"></i>
+                    </button>
+                </div>
                 <div id="countdown" class="countdown-overlay">5</div>
                 <div id="btn-manual" class="btn-snap" onclick="manualSnap()">
                     <i class="fas fa-camera"></i>

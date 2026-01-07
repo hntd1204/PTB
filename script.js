@@ -323,3 +323,9 @@ function triggerFlash() {
     void f.offsetWidth; // Trigger reflow để animation chạy lại
     f.classList.add('flash-active');
 }
+
+// --- CHỨC NĂNG LẬT CAMERA ---
+function toggleMirror() {
+    // vid là biến toàn cục video đã khai báo ở đầu file
+    vid.classList.toggle('no-mirror');
+}
