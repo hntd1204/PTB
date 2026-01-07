@@ -1,5 +1,5 @@
 // --- CẤU HÌNH ---
-const TIME_PER_SHOT = 5; 
+let TIME_PER_SHOT = 5; 
 const TOTAL_SHOTS = 10;
 
 // --- BIẾN TOÀN CỤC ---
@@ -78,6 +78,7 @@ async function startProcess() {
         
         btnMan.style.display = 'none';
         playShutter();
+        triggerFlash();
         
         // Capture
         cvsTemp.width = vid.videoWidth; cvsTemp.height = vid.videoHeight;
@@ -307,4 +308,18 @@ function processDownload() {
 function switchScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+}
+
+function setTimer(seconds, el) {
+    TIME_PER_SHOT = seconds;
+    document.querySelectorAll('.btn-timer').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    statusTxt.innerText = `Sẵn sàng chụp ${TOTAL_SHOTS} tấm (${TIME_PER_SHOT}s/tấm)`;
+}
+
+function triggerFlash() {
+    const f = document.getElementById('flash-effect');
+    f.classList.remove('flash-active');
+    void f.offsetWidth; // Trigger reflow để animation chạy lại
+    f.classList.add('flash-active');
 }

@@ -411,3 +411,55 @@ video {
     margin-bottom: 20px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
+
+/* === FLASH EFFECT === */
+.flash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.flash-active {
+    animation: flashAnim 0.3s ease-out;
+}
+
+@keyframes flashAnim {
+    0% {
+        opacity: 0.8;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Tùy chỉnh thêm cho phần chọn thời gian */
+.timer-opts {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-timer {
+    padding: 5px 15px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.btn-timer.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}

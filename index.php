@@ -28,8 +28,16 @@
             </div>
 
             <div style="margin-top: 20px; text-align: center;">
-                <p id="status-text" style="color:#666; margin: 0 0 10px 0; font-size: 0.9rem;">Sẵn sàng chụp 10 tấm
-                    (5s/tấm)</p>
+                <div class="timer-opts">
+                    <button class="btn-timer" onclick="setTimer(3, this)">3 giây</button>
+                    <button class="btn-timer active" onclick="setTimer(5, this)">5 giây</button>
+                    <button class="btn-timer" onclick="setTimer(10, this)">10 giây</button>
+                </div>
+
+                <p id="status-text" style="color:#666; margin: 0 0 10px 0; font-size: 0.9rem;">
+                    Sẵn sàng chụp 10 tấm
+                </p>
+
                 <button id="btn-start" class="btn btn-primary" onclick="startProcess()"
                     style="width: auto; padding: 12px 40px;">
                     Bắt đầu <i class="fas fa-play"></i>
@@ -157,6 +165,7 @@
     </div>
 
     <script src="script.js?v=<?php echo time(); ?>"></script>
+    <div id="flash-effect" class="flash-overlay"></div>
 
 </body>
 
